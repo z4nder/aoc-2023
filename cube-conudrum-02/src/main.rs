@@ -103,24 +103,40 @@ fn main() {
 
     let mut cubes_quantity = HashMap::new();
 
-    cubes_quantity.insert("red", 12);
-    cubes_quantity.insert("gree", 13);
-    cubes_quantity.insert("blue", 14);
+    cubes_quantity.insert(CubeColors::RED, 12);
+    cubes_quantity.insert(CubeColors::GREEN, 13);
+    cubes_quantity.insert(CubeColors::BLUE, 14);
 
-    // println!("Result: {:?}", sum_valid_ids(games, cubes_quantity));
+    println!("Result: {:?}", sum_valid_ids(games, cubes_quantity));
 }
 
-// fn sum_valid_ids(games: Vec<Game>, cubes_quantity: HashMap<&str, i32>) -> i32 {
-//     let mut sum = 0;
+fn sum_valid_ids(games: Vec<Game>, cubes_quantity: HashMap<CubeColors, i32>) -> i32 {
+    let mut sum = 0;
 
-//     for game in games {
-//         for game_record in game.records {
-//             if()
-//         }
-//     }
+    for game in games {
+        if valid_records(game.records, &cubes_quantity) {
+            sum += game.id;
+        }
+    }
 
-//     todo!()
-// }
+    sum
+}
+
+fn valid_records(records: Vec<GameRecord>, cubes_quantity: &HashMap<CubeColors, i32>) -> bool {
+    for game_record in records {
+        if game_record.value.get(&CubeColors::RED) > cubes_quantity.get(&CubeColors::RED) {
+            return false;
+        }
+        if game_record.value.get(&CubeColors::GREEN) > cubes_quantity.get(&CubeColors::GREEN) {
+            return false;
+        }
+        if game_record.value.get(&CubeColors::BLUE) > cubes_quantity.get(&CubeColors::BLUE) {
+            return false;
+        }
+    }
+
+    return true;
+}
 
 fn parse_games(file: String) -> Vec<Game> {
     let lines = file.lines();
@@ -159,8 +175,6 @@ fn read_file(file_path: &str) -> String {
 
 #[cfg(test)]
 mod tests {
-    use std::collections::HashMap;
-
     use crate::{parse_games, read_file, Game, GameRecord};
 
     #[test]
