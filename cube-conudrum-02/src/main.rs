@@ -26,7 +26,8 @@ use std::{
     fs::{self},
 };
 
-enum IpAddrKind {
+#[derive(Debug, PartialEq, Eq, Hash)]
+enum CubeColors {
     RED,
     GREEN,
     BLUE,
@@ -40,25 +41,40 @@ struct Game {
 
 #[derive(Default, Debug, PartialEq)]
 struct GameRecord {
-    red: i32,
-    green: i32,
-    blue: i32,
+    value: HashMap<CubeColors, i32>,
+}
+
+impl Game {
+    fn create(id: i32, records: Vec<GameRecord>) -> Self {
+        Self { id, records }
+    }
+    // fn sum_valid_ids(games: Vec<Self>, cubes_quantity: HashMap<&str, i32>) -> i32 {
+    //     todo!()
+    // }
 }
 
 impl GameRecord {
     fn create(red: i32, green: i32, blue: i32) -> Self {
-        Self { red, green, blue }
+        let mut value = HashMap::new();
+
+        value.insert(CubeColors::RED, red);
+        value.insert(CubeColors::GREEN, green);
+        value.insert(CubeColors::BLUE, blue);
+
+        GameRecord { value }
     }
 
-    fn create_from_strings(records: Vec<&str>) -> Vec<Self> {
-        let mut game_records: Vec<Self> = Vec::new();
+    fn create_records(records: Vec<&str>) -> Vec<GameRecord> {
+        let mut game_records: Vec<GameRecord> = Vec::new();
 
         for record in records {
-            game_records.push(Self::create(
+            let rec = Self::create(
                 Self::find_cube_count_by_color(record, "red"),
                 Self::find_cube_count_by_color(record, "green"),
                 Self::find_cube_count_by_color(record, "blue"),
-            ))
+            );
+
+            game_records.push(rec);
         }
 
         game_records
@@ -79,21 +95,6 @@ impl GameRecord {
 
         return 0;
     }
-
-    fn validate_cube_count(self, limit: i32, color: &str){
-        self.color
-
-    }
-}
-
-impl Game {
-    fn create(id: i32, records: Vec<GameRecord>) -> Self {
-        Self { id, records }
-    }
-
-    // fn sum_valid_ids(games: Vec<Self>, cubes_quantity: HashMap<&str, i32>) -> i32 {
-    //     todo!()
-    // }
 }
 
 fn main() {
@@ -106,20 +107,20 @@ fn main() {
     cubes_quantity.insert("gree", 13);
     cubes_quantity.insert("blue", 14);
 
-    println!("Result: {:?}", sum_valid_ids(games, cubes_quantity));
+    // println!("Result: {:?}", sum_valid_ids(games, cubes_quantity));
 }
 
-fn sum_valid_ids(games: Vec<Game>, cubes_quantity: HashMap<&str, i32>) -> i32 {
-    let mut sum = 0;
+// fn sum_valid_ids(games: Vec<Game>, cubes_quantity: HashMap<&str, i32>) -> i32 {
+//     let mut sum = 0;
 
-    for game in games {
-        for game_record in game.records {
-            if()
-        }
-    }
+//     for game in games {
+//         for game_record in game.records {
+//             if()
+//         }
+//     }
 
-    todo!()
-}
+//     todo!()
+// }
 
 fn parse_games(file: String) -> Vec<Game> {
     let lines = file.lines();
@@ -132,7 +133,7 @@ fn parse_games(file: String) -> Vec<Game> {
         let game_id = parse_game_id(game_record_string[0]);
         let game_records = parse_game_record(game_record_string[1]);
 
-        let records = GameRecord::create_from_strings(game_records);
+        let records = GameRecord::create_records(game_records);
 
         games.push(Game::create(game_id, records));
     }
@@ -158,6 +159,8 @@ fn read_file(file_path: &str) -> String {
 
 #[cfg(test)]
 mod tests {
+    use std::collections::HashMap;
+
     use crate::{parse_games, read_file, Game, GameRecord};
 
     #[test]
